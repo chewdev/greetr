@@ -21,6 +21,16 @@
 		es: 'Inicio sesion'
 	};
 
+	var loggedOutMessages = {
+		en: "Logged out",
+		es: "Termino sesion"
+	}
+
+	var byeMessages = {
+		en: 'Goodbye',
+		es: 'Hasta luego'
+	}
+
 	Greetr.prototype = {
 		greeting : function() {
 			// this.language === "en" ? console.log("Hello " + this.firstName + ' ' + this.lastName) : console.log("You're not English");
@@ -42,12 +52,19 @@
 		},
 
 		validateLang: function() {
-			supportedLangs.indexOf(this.language) === -1 ? console.log("Language not supported") : console.log("Language supported!");
+			if (supportedLangs.indexOf(this.language) === -1 ) {
+				throw "Language is not supported";
+			}
 		},
 
 		log: function() {
 			if (console) {
-				console.log(logMessages[this.language] + ': ' + this.fullName());
+				if (loggedIn) {
+					console.log(logMessages[this.language] + ': ' + this.fullName()); 
+				} else {
+					console.log(loggedOutMessages[this.language] + ': ' + this.fullName());
+				}
+
 			}
 			return this;
 		},
@@ -74,7 +91,26 @@
 
 			return this;
 
-		}
+		},
+
+		sayBye: function() {
+			return byeMessages[this.language] + ' ' + this.fullName();
+		},
+
+		updatebye$: function(selector) {
+			if (!jQuery) {
+				throw 'jQuery not loaded';
+			}
+
+			if(!selector) {
+				throw 'Missing jQuery selector';
+			}
+			var byeMsg = this.sayBye();
+			$(selector).html(byeMsg);
+
+			return this;
+
+		},
 		
 	};
 
@@ -83,6 +119,8 @@
 			self.firstName = fName || "Anon";
 			self.lastName = lName || "";
 			self.language = lang || "en";
+
+			self.validateLang();
 		}
 
 	Greetr.init.prototype = Greetr.prototype;
